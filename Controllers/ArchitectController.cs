@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace framework_backend.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/architect")]
     public class ArchitectController : ControllerBase
     {
         private readonly AppDbContext _context;
