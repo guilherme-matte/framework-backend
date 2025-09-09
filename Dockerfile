@@ -14,7 +14,7 @@ COPY . ./
 RUN dotnet publish -c Release -o out
 
 # Imagem final de runtime
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 # Copia a build
