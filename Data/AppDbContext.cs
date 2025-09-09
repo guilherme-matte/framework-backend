@@ -12,10 +12,14 @@ namespace framework_backend.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Architect>()
-        .Property(a => a.Speciality)
-        .HasConversion(
-            v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
-            v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null));
+     .Property(a => a.Speciality)
+     .HasConversion(
+         v => JsonSerializer.Serialize(v ?? new List<string>(), (JsonSerializerOptions)null),
+         v => string.IsNullOrEmpty(v)
+             ? new List<string>()
+             : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null));
+       
         }
+
     }
 }

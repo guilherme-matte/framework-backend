@@ -42,5 +42,41 @@ namespace framework_backend.Controllers
 
             return CreatedAtAction(nameof(GetArchitect), new { id = architect.Id }, architect);
         }
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateArchitect(int id, Architect architect)
+        {
+            if (id != architect.Id) return BadRequest();
+
+            var existingArchitect = await _context.Architects.FindAsync(id);
+
+            if (existingArchitect == null) return NotFound();
+
+            existingArchitect.Name = architect.Name;
+            existingArchitect.Nationality = architect.Nationality;
+            existingArchitect.Subtitle = architect.Subtitle;
+            existingArchitect.BirthDate = architect.BirthDate;
+            existingArchitect.Biography = architect.Biography;
+            existingArchitect.Picture = architect.Picture;
+            existingArchitect.Verified = architect.Verified;
+            existingArchitect.Trending = architect.Trending;
+            existingArchitect.Training = architect.Training;
+            existingArchitect.SocialMedia = architect.SocialMedia;
+            existingArchitect.Stats = architect.Stats;
+            existingArchitect.Location = architect.Location;
+            existingArchitect.Speciality = architect.Speciality;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        [HttpDelete]
+        public async Task<ActionResult> DeleteArchitect(int id)
+        {
+            var architect = await _context.Architects.FindAsync(id);
+            if (architect == null) return NotFound();
+            _context.Architects.Remove(architect);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
+
 }
