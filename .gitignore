@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.log
+# Ignorar appsettings com dados sensíveis
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# Ignorar arquivos temporários e builds
+bin/
+obj/
+*.log

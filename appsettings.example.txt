@@ -1,0 +1,11 @@
+{
+  "ConnectionStrings": { "DefaultConnection": "Host=IP_DO_SERVIDOR OU LOCALHOST;Port=PORTA;Database=NOMEDOBANCO;Username=USUARIO;Password=SENHA" },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+
+}//ALTERAR A EXTENSÃO DO ARQUIVO PARA .json
