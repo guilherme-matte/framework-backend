@@ -5,7 +5,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DEFAULT_CONNECTION": "Host=localhost;Port=5432;Database=frameworkdb;Username=postgres;Password=admin"
+        "DEFAULT_CONNECTION": "Host=dpg-d304hfodl3ps739pquu0-a.oregon-postgres.render.com;Port=5432;Database=frameworkdb;Username=admin;Password=8jHuo6ZnsCVX1jphfWb38qExJjd9Htyc"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:8001;http://localhost:8000"
@@ -16,7 +16,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DEFAULT_CONNECTION": "Host=localhost;Port=5432;Database=frameworkdb;Username=postgres;Password=admin"
+        "DEFAULT_CONNECTION": "Host=dpg-d304hfodl3ps739pquu0-a.oregon-postgres.render.com;Port=5432;Database=frameworkdb;Username=admin;Password=8jHuo6ZnsCVX1jphfWb38qExJjd9Htyc"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7213;http://localhost:5246"

@@ -11,7 +11,7 @@ namespace framework_backend.Models
         public string Subtitle { get; set; }
         public DateOnly BirthDate { get; set; }
         public string Biography { get; set; }
-        public List<Speciality> Speciality { get; set; } = new();
+        public List<String> Speciality { get; set; } = new();
         public string Picture { get; set; }//armazena URL da foto de perfil
 
         public bool Verified { get; set; }
@@ -52,13 +52,5 @@ namespace framework_backend.Models
         public string Country { get; set; }
         public string State { get; set; }
     }
-    public class Speciality
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-        public int ArchitectId { get; set; }
-        [JsonIgnore]
-        public Architect? Architect { get; set; }
-    }
+    
 }

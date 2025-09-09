@@ -1,5 +1,6 @@
 ﻿using framework_backend.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace framework_backend.Data
 {
@@ -7,15 +8,14 @@ namespace framework_backend.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Speciality> Specialities { get; set; }
         public DbSet<Architect> Architects { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Architect>()
-                .Property(a => a.BirthDate)
-                .HasColumnType("date");
-
-            base.OnModelCreating(modelBuilder);
+        .Property(a => a.Speciality)
+        .HasConversion(
+            v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+            v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null));
         }
     }
 }
