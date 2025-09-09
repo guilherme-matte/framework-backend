@@ -8,7 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
-
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("A variável de ambiente DEFAULT_CONNECTION não está definida.");
+}
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -56,10 +59,8 @@ builder.Services.AddSwaggerGen(c =>
             },
             ["speciality"] = new OpenApiArray
             {
-                new OpenApiObject { ["nome"] = new OpenApiString("especialidade 1") },
-                new OpenApiObject { ["nome"] = new OpenApiString("especialidade 2") },
-                new OpenApiObject { ["nome"] = new OpenApiString("especialidade 3") },
-                new OpenApiObject { ["nome"] = new OpenApiString("especialidade 4") },
+                new OpenApiString("nome da especialidade 1"),
+                new OpenApiString("nome da especialidade 2")
             }
         }
     });
