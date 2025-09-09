@@ -9,7 +9,7 @@ obj/
 appsettings.json
 appsettings.Development.json
 appsettings.Production.json
-
+launchSettings.json
 # Ignorar arquivos temporários e builds
 bin/
 obj/
