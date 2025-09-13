@@ -68,7 +68,7 @@ namespace framework_backend.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteArchitect(int id)
         {
             var architect = await _context.Architects.FindAsync(id);
