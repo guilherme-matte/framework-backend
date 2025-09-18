@@ -16,13 +16,14 @@ namespace framework_backend.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Architect>>> GetArchitects()
+        public async Task<ActionResult<IEnumerable<ArchitectModel>>> GetArchitects()
         {
             return await _context.Architects.ToListAsync();
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Architect>> GetArchitect(int id)
+        public async Task<ActionResult<ArchitectModel>> GetArchitect(int id)
         {
             var architect = await _context.Architects.FirstOrDefaultAsync(a => a.Id == id);
 
@@ -33,7 +34,7 @@ namespace framework_backend.Controllers
             return architect;
         }
         [HttpPost]
-        public async Task<ActionResult<Architect>> CreateArchitect(Architect architect)
+        public async Task<ActionResult<ArchitectModel>> CreateArchitect(ArchitectModel architect)
         {
             if (architect == null) return BadRequest();
 
@@ -43,7 +44,7 @@ namespace framework_backend.Controllers
             return CreatedAtAction(nameof(GetArchitect), new { id = architect.Id }, architect);
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateArchitect(int id, Architect architect)
+        public async Task<ActionResult> UpdateArchitect(int id, ArchitectModel architect)
         {
             if (id != architect.Id) return BadRequest();
 

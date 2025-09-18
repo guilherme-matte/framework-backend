@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Framework API", Version = "v1" });
 
     // Exemplo de body para Architect
-    c.MapType<Architect>(() => new OpenApiSchema
+    c.MapType<ArchitectModel>(() => new OpenApiSchema
     {
         Type = "object",
         Example = new OpenApiObject

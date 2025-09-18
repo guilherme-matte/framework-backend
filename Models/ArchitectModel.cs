@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace framework_backend.Models
 {
-    public class Architect
+    public class ArchitectModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,28 +16,22 @@ namespace framework_backend.Models
 
         public bool Verified { get; set; }
         public bool Trending { get; set; }//não encontrei nome melhor para destaques
-
-        public Training Training { get; set; }
-        public SocialMedia SocialMedia { get; set; }
-        public Stats Stats { get; set; }
+        [JsonIgnore]
+       
+        public ArchitectTraining Training { get; set; }
+        public ArchitectSocialMedia SocialMedia { get; set; }
+        public ArchitectStats Stats { get; set; }
         public Location Location { get; set; }
     }
-
     [Owned]
-    public class Training//formação academica
-    {
-        public string Name { get; set; }
-        public int Year { get; set; }
-    }
-    [Owned]
-    public class SocialMedia
+    public class ArchitectSocialMedia
     {
         public string Linkedin { get; set; }
         public string Instagram { get; set; }
         public string Portfolio { get; set; }
     }
     [Owned]
-    public class Stats //likes, followers, projetos, etc..
+    public class ArchitectStats //likes, followers, projetos, etc..
     {
         public int TotalProjects { get; set; }
         public int ESGProjects { get; set; }
@@ -46,11 +40,10 @@ namespace framework_backend.Models
         public int Followers { get; set; }
     }
     [Owned]
-    public class Location
+    public class ArchitectTraining//formação academica
     {
-        public string City { get; set; }
-        public string Country { get; set; }
-        public string State { get; set; }
+        public string Name { get; set; }
+        public int Year { get; set; }
     }
-    
+
 }
