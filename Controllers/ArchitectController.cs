@@ -3,6 +3,7 @@ using framework_backend.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace framework_backend.Controllers
 {
@@ -26,15 +27,15 @@ namespace framework_backend.Controllers
         public async Task<ActionResult<ArchitectModel>> GetArchitect(int id)
         {
             var architect = await _context.Architects.FirstOrDefaultAsync(a => a.Id == id);
-
             if (architect == null)
             {
                 return NotFound();
             }
+            
             return architect;
         }
         [HttpPost]
-        public async Task<ActionResult<ArchitectModel>> CreateArchitect(ArchitectModel architect)
+        public async Task<ActionResult<IEnumerable<ArchitectModel>>> CreateArchitect(ArchitectModel architect)
         {
             if (architect == null) return BadRequest();
 

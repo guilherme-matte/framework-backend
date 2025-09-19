@@ -58,7 +58,7 @@ namespace framework_backend.Data
 
             modelBuilder.Entity<ProjectContributors>()
                 .HasOne(pc => pc.Architect)
-                .WithMany() // caso queira depois pode fazer um "Projects" em ArchitectModel
+                .WithMany() 
                 .HasForeignKey(pc => pc.ArchitectId);
 
             base.OnModelCreating(modelBuilder);

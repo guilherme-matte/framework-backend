@@ -16,8 +16,6 @@ namespace framework_backend.Models
 
         public bool Verified { get; set; }
         public bool Trending { get; set; }//não encontrei nome melhor para destaques
-        [JsonIgnore]
-       
         public ArchitectTraining Training { get; set; }
         public ArchitectSocialMedia SocialMedia { get; set; }
         public ArchitectStats Stats { get; set; }

@@ -12,7 +12,7 @@ namespace framework_backend.Models
         public Location Location { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public bool Ongoing { get; set; }//se o projeto ainda está em 
+        public bool Ongoing { get; set; }//se o projeto ainda está em andamento
         public List<string> Images { get; set; } = new();//Url das imagens do projeto
         public bool ESG { get; set; }
         public bool Featured { get; set; }
@@ -30,8 +30,8 @@ namespace framework_backend.Models
         public List<double> Coordinates { get; set; } = new(); //latitude, longitude
 
     }
-    [Owned]
 
+    [Owned]
     public class ProjectContributors
     {
         public int ProjectId { get; set; }
