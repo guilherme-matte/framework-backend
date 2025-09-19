@@ -47,7 +47,6 @@ namespace framework_backend.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateArchitect(int id, ArchitectModel architect)
         {
-            if (id != architect.Id) return BadRequest();
 
             var existingArchitect = await _context.Architects.FindAsync(id);
 
