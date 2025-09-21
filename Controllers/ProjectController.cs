@@ -75,13 +75,11 @@ namespace framework_backend.Controllers
 
             };
 
-            // Buscar arquitetos existentes
             var architectIds = dto.Architects.Select(a => a.ArchitectId).ToList();
             var existingArchitects = await _context.Architects
                                                    .Where(a => architectIds.Contains(a.Id))
                                                    .ToListAsync();
 
-            // Adicionar contribuintes
             projectModel.Contributors ??= new List<ProjectContributors>();
             foreach (var ar in dto.Architects)
             {
@@ -99,7 +97,6 @@ namespace framework_backend.Controllers
             _context.Projects.Add(projectModel);
             await _context.SaveChangesAsync();
 
-            // Retornar DTO completo usando o service
             var projectDto = await _projectResponseService.ProjectResponse(projectModel.Id, architectIds);
             return CreatedAtAction(nameof(GetProjectById), new { id = projectModel.Id }, projectDto);
         }
