@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using framework_backend.Data;
@@ -11,9 +12,11 @@ using framework_backend.Data;
 namespace framework_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250921051630_fixedLocation")]
+    partial class fixedLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,6 +349,28 @@ namespace framework_backend.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectModelId");
+
+                            b1.OwnsOne("framework_backend.Models.Coordinates", "Coordinates", b2 =>
+                                {
+                                    b2.Property<int>("ProjectStatsProjectModelId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<double>("Latitude")
+                                        .HasColumnType("double precision");
+
+                                    b2.Property<double>("Longitude")
+                                        .HasColumnType("double precision");
+
+                                    b2.HasKey("ProjectStatsProjectModelId");
+
+                                    b2.ToTable("Projects");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ProjectStatsProjectModelId");
+                                });
+
+                            b1.Navigation("Coordinates")
+                                .IsRequired();
                         });
 
                     b.Navigation("Location")

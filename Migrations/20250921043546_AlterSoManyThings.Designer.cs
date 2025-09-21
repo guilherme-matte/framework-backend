@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using framework_backend.Data;
@@ -11,9 +12,11 @@ using framework_backend.Data;
 namespace framework_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250921043546_AlterSoManyThings")]
+    partial class AlterSoManyThings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,6 +149,35 @@ namespace framework_backend.Migrations
 
             modelBuilder.Entity("framework_backend.Models.ArchitectModel", b =>
                 {
+                    b.OwnsOne("framework_backend.Models.Location", "Location", b1 =>
+                        {
+                            b1.Property<int>("ArchitectModelId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("ArchitectModelId");
+
+                            b1.ToTable("Architects");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ArchitectModelId");
+                        });
+
                     b.OwnsOne("framework_backend.Models.ArchitectSocialMedia", "SocialMedia", b1 =>
                         {
                             b1.Property<int>("ArchitectModelId")
@@ -219,31 +251,6 @@ namespace framework_backend.Migrations
                                 .HasForeignKey("ArchitectModelId");
                         });
 
-                    b.OwnsOne("framework_backend.Models.Location", "Location", b1 =>
-                        {
-                            b1.Property<int>("ArchitectModelId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("State")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("ArchitectModelId");
-
-                            b1.ToTable("Architects");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ArchitectModelId");
-                        });
-
                     b.Navigation("Location")
                         .IsRequired();
 
@@ -278,7 +285,7 @@ namespace framework_backend.Migrations
 
             modelBuilder.Entity("framework_backend.Models.ProjectModel", b =>
                 {
-                    b.OwnsOne("framework_backend.DTOs.LocationDTO", "Location", b1 =>
+                    b.OwnsOne("framework_backend.Models.Location", "Location", b1 =>
                         {
                             b1.Property<int>("ProjectModelId")
                                 .HasColumnType("integer");
@@ -305,28 +312,6 @@ namespace framework_backend.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectModelId");
-
-                            b1.OwnsOne("framework_backend.Models.Coordinates", "Coordinates", b2 =>
-                                {
-                                    b2.Property<int>("LocationDTOProjectModelId")
-                                        .HasColumnType("integer");
-
-                                    b2.Property<double>("Latitude")
-                                        .HasColumnType("double precision");
-
-                                    b2.Property<double>("Longitude")
-                                        .HasColumnType("double precision");
-
-                                    b2.HasKey("LocationDTOProjectModelId");
-
-                                    b2.ToTable("Projects");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("LocationDTOProjectModelId");
-                                });
-
-                            b1.Navigation("Coordinates")
-                                .IsRequired();
                         });
 
                     b.OwnsOne("framework_backend.Models.ProjectStats", "Stats", b1 =>
@@ -346,6 +331,28 @@ namespace framework_backend.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectModelId");
+
+                            b1.OwnsOne("framework_backend.Models.Coordinates", "Coordinates", b2 =>
+                                {
+                                    b2.Property<int>("ProjectStatsProjectModelId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<double>("Latitude")
+                                        .HasColumnType("double precision");
+
+                                    b2.Property<double>("Longitude")
+                                        .HasColumnType("double precision");
+
+                                    b2.HasKey("ProjectStatsProjectModelId");
+
+                                    b2.ToTable("Projects");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ProjectStatsProjectModelId");
+                                });
+
+                            b1.Navigation("Coordinates")
+                                .IsRequired();
                         });
 
                     b.Navigation("Location")

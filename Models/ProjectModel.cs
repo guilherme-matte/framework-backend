@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using framework_backend.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace framework_backend.Models
 {
@@ -9,7 +10,7 @@ namespace framework_backend.Models
         public string ShortDescription { get; set; }
         public string LongDescription { get; set; }
         public string Area { get; set; }//em m²
-        public Location Location { get; set; }
+        public LocationDTO Location { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool Ongoing { get; set; }//se o projeto ainda está em andamento
@@ -23,11 +24,16 @@ namespace framework_backend.Models
         public bool IsActive { get; set; } = true;
     }
     [Owned]
+    public class Coordinates
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+    [Owned]
     public class ProjectStats
     {
         public int Views { get; set; }
         public int Likes { get; set; }
-        public List<double> Coordinates { get; set; } = new(); //latitude, longitude
 
     }
 
