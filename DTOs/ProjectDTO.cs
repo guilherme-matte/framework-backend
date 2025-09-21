@@ -35,7 +35,7 @@ namespace framework_backend.DTOs
     public class ContributorsDTO
     {
         public string Id { get; set; }
-        public bool Featured { get; set; }
+        public bool Trending { get; set; }
         public string Name { get; set; }
         public string Subtitle { get; set; }
         public string Role { get; set; }

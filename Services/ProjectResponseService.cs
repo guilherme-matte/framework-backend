@@ -59,7 +59,7 @@ namespace framework_backend.Services
                         Name = c.Architect?.Name,
                         Subtitle = c.Architect?.Subtitle,
                         Picture = c.Architect?.Picture,
-                        Featured = false
+                        Trending = c.Architect?.Trending ?? false
                     })
                     .ToList()
             };
