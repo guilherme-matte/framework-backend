@@ -2,13 +2,10 @@
 
 public class CreateProjectDTO
 {
-    //[FromForm]
     public CreateProjectDataDTO Project { get; set; }
     
-    //[FromForm]
     public List<ArchitectAndRole> Architects { get; set; }
     
-//    [FromForm]
 //    public List<IFormFile> Images { get; set; }
 }
 
@@ -19,6 +16,8 @@ public class CreateProjectDataDTO
     public string LongDescription { get; set; }
     public string Area { get; set; }
     public CreateLocationDTO Location { get; set; }
+    public List<string> Images { get; set; } = new();
+
     public bool ESG { get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }

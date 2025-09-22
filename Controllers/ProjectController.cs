@@ -43,7 +43,6 @@ namespace framework_backend.Controllers
             return Ok(projectsDto);
         }
         [HttpPost]
-        //[Consumes("multipart/form-data")]
         public async Task<ActionResult<CreateProjectDTO>> CreateProject(CreateProjectDTO dto)
         {
             if (dto.Project == null || dto.Architects == null || !dto.Architects.Any())
@@ -93,7 +92,7 @@ namespace framework_backend.Controllers
                 }
             }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            //using var transaction = await _context.Database.BeginTransactionAsync();
 
             //try
             //{
@@ -118,9 +117,11 @@ namespace framework_backend.Controllers
             //    throw;
             //}
 
+            _context.Projects.Add(projectModel);
+            await _context.SaveChangesAsync();
 
             var projectDto = await _projectResponseService.ProjectResponse(projectModel.Id, architectIds);
-            return CreatedAtAction(nameof(GetProjectById), new { id = projectModel.Id }, projectDto);
+            return CreatedAtAction(nameof(GetProjectById), new { projectId = projectModel.Id }, projectDto);
         }
         [HttpGet("{projectId}")]
         public async Task<ActionResult<ProjectDTO>> GetProjectById(int projectId, [FromQuery] List<int> contributorIds)
