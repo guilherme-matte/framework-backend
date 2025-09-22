@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace framework_backend.Controllers
 {
-    [DisableCors]
     [ApiController]
     [Route("/api/project")]
     public class ProjectController : ControllerBase
