@@ -11,10 +11,8 @@ public class CreateProjectDataDTO
     public string LongDescription { get; set; }
     public string Area { get; set; }
     public CreateLocationDTO Location { get; set; }
-    public CreateStatsDTO Stats { get; set; }
     public List<string> Images { get; set; } = new();
     public bool ESG { get; set; }
-    public bool Featured { get; set; }
 }
 public class CreateCoordinates
 {

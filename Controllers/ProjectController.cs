@@ -65,13 +65,9 @@ namespace framework_backend.Controllers
                     }
                 },
                 Images = dto.Project.Images,
-                ESG = dto.Project.ESG,
-                Featured = dto.Project.Featured,
-                Stats = dto.Project.Stats != null ? new ProjectStats
-                {
-                    Likes = dto.Project.Stats.Likes,
-                    Views = dto.Project.Stats.Views
-                } : new ProjectStats()
+                ESG = dto.Project.ESG
+                
+                
 
             };
 

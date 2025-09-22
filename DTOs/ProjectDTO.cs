@@ -10,7 +10,7 @@ namespace framework_backend.DTOs
         public string Area { get; set; }
         public LocationDTO Location { get; set; }
         public List<string> Images { get; set; } = new();
-        public StatsDTO Stats { get; set; }
+        public StatsDTO Stats { get; set; } = new();
         public string LongDescription { get; set; }
         public bool ESG { get; set; }
         public bool Featured { get; set; }
