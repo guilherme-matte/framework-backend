@@ -2,10 +2,10 @@
 
 public class CreateProjectDTO
 {
-    [FromForm]
+    //[FromForm]
     public CreateProjectDataDTO Project { get; set; }
     
-    [FromForm]
+    //[FromForm]
     public List<ArchitectAndRole> Architects { get; set; }
     
 //    [FromForm]
