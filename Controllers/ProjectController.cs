@@ -14,6 +14,7 @@ namespace framework_backend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ProjectResponseService _projectResponseService;
+        private readonly ImageService _imageService;
         public ProjectController(AppDbContext context)
         {
             _context = context;
@@ -42,10 +43,15 @@ namespace framework_backend.Controllers
             return Ok(projectsDto);
         }
         [HttpPost]
+        //[Consumes("multipart/form-data")]
         public async Task<ActionResult<CreateProjectDTO>> CreateProject(CreateProjectDTO dto)
         {
             if (dto.Project == null || dto.Architects == null || !dto.Architects.Any())
                 return BadRequest("Projeto e arquitetos são obrigatórios.");
+            var architectIds = dto.Architects.Select(a => a.ArchitectId).ToList();
+            var existingArchitects = await _context.Architects
+                                               .Where(a => architectIds.Contains(a.Id))
+                                               .ToListAsync();
 
             var projectModel = new ProjectModel
             {
@@ -65,17 +71,13 @@ namespace framework_backend.Controllers
                         Longitude = dto.Project.Location?.Coordinates?.Longitude ?? 0
                     }
                 },
-                Images = dto.Project.Images,
-                ESG = dto.Project.ESG
-                
-                
 
+                ESG = dto.Project.ESG
             };
 
-            var architectIds = dto.Architects.Select(a => a.ArchitectId).ToList();
-            var existingArchitects = await _context.Architects
-                                                   .Where(a => architectIds.Contains(a.Id))
-                                                   .ToListAsync();
+
+
+            
 
             projectModel.Contributors ??= new List<ProjectContributors>();
             foreach (var ar in dto.Architects)
@@ -91,8 +93,31 @@ namespace framework_backend.Controllers
                 }
             }
 
-            _context.Projects.Add(projectModel);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            //try
+            //{
+            //    _context.Projects.Add(projectModel);
+            //    await _context.SaveChangesAsync();
+
+            //    ImageDTO imageDTO = new ImageDTO
+            //    {
+            //        Id = projectModel.Id,
+            //        Source = ImageSource.Projects.ToString(),
+            //        Images = dto.Images
+            //    };
+
+            //    projectModel.Images.AddRange(await _imageService.SaveImageAsync(imageDTO));
+            //    await _context.SaveChangesAsync();
+
+            //    await transaction.CommitAsync();
+            //}
+            //catch
+            //{
+            //    await transaction.RollbackAsync();
+            //    throw;
+            //}
+
 
             var projectDto = await _projectResponseService.ProjectResponse(projectModel.Id, architectIds);
             return CreatedAtAction(nameof(GetProjectById), new { id = projectModel.Id }, projectDto);

@@ -35,6 +35,7 @@ namespace framework_backend.Controllers
             return architect;
         }
         [HttpPost]
+        
         public async Task<ActionResult<IEnumerable<ArchitectModel>>> CreateArchitect(ArchitectModel architect)
         {
             if (architect == null) return BadRequest();
