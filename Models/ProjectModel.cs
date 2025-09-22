@@ -16,7 +16,7 @@ namespace framework_backend.Models
         public bool Ongoing { get; set; }//se o projeto ainda está em andamento
         public List<string> Images { get; set; } = new();//Url das imagens do projeto
         public bool ESG { get; set; }
-        public bool Featured { get; set; }
+        public bool Featured { get; set; } = false;
         public ProjectStats Stats { get; set; } = new();
         public List<ProjectContributors> Contributors { get; set; } = new();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
