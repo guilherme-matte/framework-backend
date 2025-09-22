@@ -1,5 +1,6 @@
 ﻿using framework_backend.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace framework_backend.Models
 {
@@ -11,8 +12,9 @@ namespace framework_backend.Models
         public string LongDescription { get; set; }
         public string Area { get; set; }//em m²
         public LocationDTO Location { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateOnly StartDate { get; set; }
+        [AllowNull]
+        public DateOnly EndDate { get; set; }
         public bool Ongoing { get; set; }//se o projeto ainda está em andamento
         public List<string> Images { get; set; } = new();//Url das imagens do projeto
         public bool ESG { get; set; }
@@ -37,7 +39,7 @@ namespace framework_backend.Models
 
     }
 
-    [Owned]
+  
     public class ProjectContributors
     {
         public int ProjectId { get; set; }
