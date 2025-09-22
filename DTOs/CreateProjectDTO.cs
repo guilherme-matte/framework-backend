@@ -20,8 +20,8 @@ public class CreateProjectDataDTO
     public string Area { get; set; }
     public CreateLocationDTO Location { get; set; }
     public bool ESG { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
     public bool Ongoing { get; set; }
 }
 public class CreateCoordinates

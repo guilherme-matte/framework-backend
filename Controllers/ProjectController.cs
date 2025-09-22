@@ -77,7 +77,7 @@ namespace framework_backend.Controllers
 
 
 
-            
+
 
             projectModel.Contributors ??= new List<ProjectContributors>();
             foreach (var ar in dto.Architects)
@@ -122,13 +122,14 @@ namespace framework_backend.Controllers
             var projectDto = await _projectResponseService.ProjectResponse(projectModel.Id, architectIds);
             return CreatedAtAction(nameof(GetProjectById), new { id = projectModel.Id }, projectDto);
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProjectDTO>> GetProjectById(int id, [FromQuery] List<int> contributorIds)
+        [HttpGet("{projectId}")]
+        public async Task<ActionResult<ProjectDTO>> GetProjectById(int projectId, [FromQuery] List<int> contributorIds)
         {
-            var projectDto = await _projectResponseService.ProjectResponse(id, contributorIds);
+            var projectDto = await _projectResponseService.ProjectResponse(projectId, contributorIds);
             if (projectDto == null) return NotFound();
             return Ok(projectDto);
         }
+        
     }
 
 }
