@@ -2,11 +2,13 @@
 using framework_backend.DTOs;
 using framework_backend.Models;
 using framework_backend.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace framework_backend.Controllers
 {
+    [DisableCors]
     [ApiController]
     [Route("/api/project")]
     public class ProjectController : ControllerBase
