@@ -19,6 +19,7 @@ namespace framework_backend.Controllers
         public ArchitectController(AppDbContext context)
         {
             _context = context;
+            _projectResponseService = new ProjectResponseService(_context);
         }
 
         [HttpGet]
@@ -83,9 +84,9 @@ namespace framework_backend.Controllers
             return NoContent();
         }
         [HttpGet("/api/architect/{id}/projects")]
-        public async Task<ActionResult<IEnumerable<ProjectDTO>>> GetProjectsByUserId(int id)
+        public async Task<ActionResult<IEnumerable<List<ProjectDTO>>>> GetProjectsByUserId(int id)
         {
-            
+
 
             var projectContributors = await _context.ProjectContributors
                 .Where(pc => pc.ArchitectId == id)
@@ -104,56 +105,17 @@ namespace framework_backend.Controllers
                 if (project == null)
                 {
                     Console.WriteLine($"Project not found for ProjectId {pc.ProjectId}");
-                    continue; // ignora se o projeto não existir
+                    continue; 
                 }
 
-                var dto = new ProjectDTO
-                {
-                    Id = project.Id.ToString(),
-                    Title = project.Title,
-                    ShortDescription = project.ShortDescription,
-                    Area = project.Area,
-                    Location = project.Location != null ? new LocationDTO
-                    {
-                        City = project.Location.City,
-                        State = project.Location.State,
-                        Country = project.Location.Country,
-                        Address = project.Location.Address,
-                        Coordinates = project.Location.Coordinates != null
-                            ? new Coordinates
-                            {
-                                Latitude = project.Location.Coordinates.Latitude,
-                                Longitude = project.Location.Coordinates.Longitude
-                            }
-                            : new Coordinates()
-                    } : null,
-                    Images = project.Images ?? new List<string>(),
-                    Stats = new StatsDTO
-                    {
-                        Likes = project.Stats?.Likes ?? 0,
-                        Views = project.Stats?.Views ?? 0
-                    },
-                    LongDescription = project.LongDescription,
-                    ESG = project.ESG,
-                    Featured = project.Featured,
-                    Contributors = project.Contributors?
-                        .Select(c => new ContributorsDTO
-                        {
-                            Id = c.ArchitectId.ToString(),
-                            Role = c.Role,
-                            Name = c.Architect?.Name,
-                            Subtitle = c.Architect?.Subtitle,
-                            Picture = c.Architect?.Picture,
-                            Trending = c.Architect?.Trending ?? false
-                        })
-                        .ToList() ?? new List<ContributorsDTO>()
-                };
+
+                var dto = await _projectResponseService.ProjectResponse(project);
 
                 projects.Add(dto);
             }
 
             return Ok(projects);
         }
-
+        
     }
 }

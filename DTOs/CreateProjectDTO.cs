@@ -17,10 +17,9 @@ public class CreateProjectDataDTO
     public string Area { get; set; }
     public CreateLocationDTO Location { get; set; }
     public List<string> Images { get; set; } = new();
-
     public bool ESG { get; set; }
     public DateOnly StartDate { get; set; }
-    public DateOnly EndDate { get; set; }
+    public DateOnly? EndDate { get; set; }
     public bool Ongoing { get; set; }
 }
 public class CreateCoordinates

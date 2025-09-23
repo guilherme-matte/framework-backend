@@ -12,12 +12,9 @@ namespace framework_backend.Services
         {
             _context = context;
         }
-        public async Task<ProjectDTO> ProjectResponse(int projectId, List<int> contributorIds)
+        public async Task<ProjectDTO> ProjectResponse(ProjectModel project)
         {
-            var project = await _context.Projects
-                .Include(p => p.Contributors)
-                .ThenInclude(c => c.Architect)
-                .FirstOrDefaultAsync(p => p.Id == projectId);
+            
 
             if (project == null) return null;
 
@@ -51,6 +48,9 @@ namespace framework_backend.Services
                 LongDescription = project.LongDescription,
                 ESG = project.ESG,
                 Featured = project.Featured,
+                StartDate = project.StartDate,
+                OnGoing = project.OnGoing,
+
                 Contributors = project.Contributors
                     .Select(c => new ContributorsDTO
                     {
@@ -63,6 +63,7 @@ namespace framework_backend.Services
                     })
                     .ToList()
             };
+            if (!project.OnGoing) dto.EndDate = project.EndDate;
 
             return dto;
         }

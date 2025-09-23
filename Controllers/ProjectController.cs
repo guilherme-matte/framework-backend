@@ -18,8 +18,7 @@ namespace framework_backend.Controllers
         public ProjectController(AppDbContext context)
         {
             _context = context;
-            _projectResponseService = new ProjectResponseService(context);
-
+            _projectResponseService = new ProjectResponseService(_context);
         }
 
         [HttpGet]
@@ -35,7 +34,7 @@ namespace framework_backend.Controllers
             var projectsDto = new List<ProjectDTO>();
             foreach (var project in projects)
             {
-                var dto = await _projectResponseService.ProjectResponse(project.Id, contributorIds);
+                var dto = await _projectResponseService.ProjectResponse(project);
                 if (dto != null)
                     projectsDto.Add(dto);
             }
@@ -71,14 +70,19 @@ namespace framework_backend.Controllers
                     }
                 },
 
-                ESG = dto.Project.ESG
+                ESG = dto.Project.ESG,
+                StartDate = dto.Project.StartDate,
+                OnGoing = dto.Project.Ongoing,
+
+
             };
-
-
-
-
+            if (!dto.Project.Ongoing)
+            {
+                projectModel.EndDate = dto.Project.EndDate;
+            }
 
             projectModel.Contributors ??= new List<ProjectContributors>();
+
             foreach (var ar in dto.Architects)
             {
                 var architect = existingArchitects.FirstOrDefault(a => a.Id == ar.ArchitectId);
@@ -119,18 +123,23 @@ namespace framework_backend.Controllers
 
             _context.Projects.Add(projectModel);
             await _context.SaveChangesAsync();
-
-            var projectDto = await _projectResponseService.ProjectResponse(projectModel.Id, architectIds);
+            Console.WriteLine("Project saved with ID: " + projectModel.Id);
+            Console.WriteLine("Architect IDs: " + string.Join(", ", architectIds));
+            var projectDto = await _projectResponseService.ProjectResponse(projectModel);
             return CreatedAtAction(nameof(GetProjectById), new { projectId = projectModel.Id }, projectDto);
         }
         [HttpGet("{projectId}")]
         public async Task<ActionResult<ProjectDTO>> GetProjectById(int projectId, [FromQuery] List<int> contributorIds)
         {
-            var projectDto = await _projectResponseService.ProjectResponse(projectId, contributorIds);
+            var project = await _context.Projects
+                .Include(p => p.Contributors)
+                .ThenInclude(c => c.Architect)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+            var projectDto = await _projectResponseService.ProjectResponse(project);
             if (projectDto == null) return NotFound();
             return Ok(projectDto);
         }
-        
+
     }
 
 }

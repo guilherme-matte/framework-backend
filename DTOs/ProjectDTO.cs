@@ -14,6 +14,9 @@ namespace framework_backend.DTOs
         public string LongDescription { get; set; }
         public bool ESG { get; set; }
         public bool Featured { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
+        public bool OnGoing { get; set; }
         public List<ContributorsDTO> Contributors { get; set; } = new();
     }
 

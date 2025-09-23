@@ -12,10 +12,9 @@ namespace framework_backend.Models
         public string LongDescription { get; set; }
         public string Area { get; set; }//em m²
         public LocationDTO Location { get; set; }
-        public DateOnly StartDate { get; set; }
-        [AllowNull]
-        public DateOnly EndDate { get; set; }
-        public bool Ongoing { get; set; }//se o projeto ainda está em andamento
+        public DateOnly StartDate { get; set; } 
+        public DateOnly? EndDate { get; set; }
+        public bool OnGoing { get; set; } = true;//se o projeto ainda está em andamento
         public List<string> Images { get; set; } = new();//Url das imagens do projeto
         public bool ESG { get; set; }
         public bool Featured { get; set; } = false;
