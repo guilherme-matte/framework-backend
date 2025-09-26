@@ -2,6 +2,7 @@ using framework_backend.Data;
 using framework_backend.Models;
 using framework_backend.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
@@ -45,7 +46,12 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Framework API V1");
 });
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "img")),
+    RequestPath = "/img"
+});
 
 
 app.UseHttpsRedirection();
