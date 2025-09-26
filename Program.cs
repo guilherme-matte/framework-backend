@@ -46,6 +46,12 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Framework API V1");
 });
+var imagesPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "img");
+
+if (!Directory.Exists(imagesPath))
+{
+    Directory.CreateDirectory(imagesPath);
+}
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
