@@ -25,7 +25,7 @@ namespace framework_backend.DTOs
         [FromForm(Name = "data")]
         public string Data { get; set; } = null!;
 
-        [FromForm(Name = "Image")]
+        [FromForm(Name = "File")]
         public IFormFile? File { get; set; }
     }
 
