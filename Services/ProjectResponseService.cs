@@ -12,10 +12,9 @@ namespace framework_backend.Services
         {
             _context = context;
         }
-        public async Task<ProjectDTO> ProjectResponse(ProjectModel project)
+        public async Task<ProjectDTO> ProjectResponse(ProjectModel project)//Embeleza o retorno do projeto
         {
             
-
             if (project == null) return null;
 
 

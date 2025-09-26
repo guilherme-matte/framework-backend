@@ -15,11 +15,14 @@ namespace framework_backend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ProjectResponseService _projectResponseService;
+        private readonly ImageService _imageService;
 
-        public ArchitectController(AppDbContext context)
+        public ArchitectController(AppDbContext context, ImageService imageService)
         {
             _context = context;
             _projectResponseService = new ProjectResponseService(_context);
+            _imageService = new ImageService();
+
         }
 
         [HttpGet]
@@ -50,19 +53,27 @@ namespace framework_backend.Controllers
             return CreatedAtAction(nameof(GetArchitect), new { id = architect.Id }, architect);
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateArchitect(int id, ArchitectModel architect)
+        public async Task<ActionResult> UpdateArchitect(int id, [FromForm]ArchitectDTO architect)
         {
 
             var existingArchitect = await _context.Architects.FindAsync(id);
 
             if (existingArchitect == null) return NotFound();
+            ImageDTO imageDTO = new ImageDTO
+            {
+                Id = existingArchitect.Id,
+                Source = ImageSource.Architects.ToString(),
+                Images = new List<IFormFile> { architect.Image }
+            };
 
+            if (imageDTO == null) return BadRequest("Imagem inexistente");
             existingArchitect.Name = architect.Name;
             existingArchitect.Nationality = architect.Nationality;
             existingArchitect.Subtitle = architect.Subtitle;
             existingArchitect.BirthDate = architect.BirthDate;
             existingArchitect.Biography = architect.Biography;
-            existingArchitect.Picture = architect.Picture;
+            var imagePath = await _imageService.SaveImageAsync(imageDTO);
+            existingArchitect.Picture = imagePath.FirstOrDefault()??null;
             existingArchitect.Verified = architect.Verified;
             existingArchitect.Trending = architect.Trending;
             existingArchitect.Training = architect.Training;

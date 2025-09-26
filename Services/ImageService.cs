@@ -28,7 +28,7 @@ namespace framework_backend.Services
             await image.SaveAsync(output, encoder);
         }
 
-        public bool IsValidImage(IFormFile file)
+        private bool IsValidImage(IFormFile file)
         {
             long maxFileSize = 25 * 1024 * 1024; // 25MB
 
@@ -76,7 +76,7 @@ namespace framework_backend.Services
             var urls = new List<string>();
             foreach (var img in dto.Images)
             {
-                if (!IsValidImage(img)) throw new ArgumentException("Imagem inválida");
+                //if (!IsValidImage(img)) throw new ArgumentException("Imagem inválida");
                 if (img.Length > 0)
                 {
                     var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(img.FileName)}";
