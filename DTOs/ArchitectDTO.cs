@@ -1,4 +1,5 @@
 ﻿using framework_backend.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace framework_backend.DTOs
 {
@@ -17,7 +18,15 @@ namespace framework_backend.DTOs
         public ArchitectStats Stats { get; set; }
         public Location Location { get; set; }
 
-        public IFormFile Image { get; set; } 
+        public IFormFile Image { get; set; }
+    }
+    public class ArchitectUpdateForm
+    {
+        [FromForm(Name = "data")]
+        public string Data { get; set; } = null!;
+
+        [FromForm(Name = "Image")]
+        public IFormFile? File { get; set; }
     }
 
 }

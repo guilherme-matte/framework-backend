@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace framework_backend.Controllers
 {
@@ -53,9 +54,17 @@ namespace framework_backend.Controllers
             return CreatedAtAction(nameof(GetArchitect), new { id = architect.Id }, architect);
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateArchitect(int id, [FromForm]ArchitectDTO architect)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult> UpdateArchitect(int id, [FromForm] ArchitectUpdateForm form)
         {
 
+            if (string.IsNullOrWhiteSpace(form.Data)) return BadRequest("Dados do arquiteto não enviados.");
+
+            var architect = JsonSerializer.Deserialize<ArchitectDTO>(form.Data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            
             var existingArchitect = await _context.Architects.FindAsync(id);
 
             if (existingArchitect == null) return NotFound();
@@ -63,17 +72,17 @@ namespace framework_backend.Controllers
             {
                 Id = existingArchitect.Id,
                 Source = ImageSource.Architects.ToString(),
-                Images = new List<IFormFile> { architect.Image }
+                Images = new List<IFormFile> { form.File }
             };
 
-            if (imageDTO == null) return BadRequest("Imagem inexistente");
+            if (form.File == null || form.File.Length == 0) return BadRequest("Imagem inexistente");
             existingArchitect.Name = architect.Name;
             existingArchitect.Nationality = architect.Nationality;
             existingArchitect.Subtitle = architect.Subtitle;
             existingArchitect.BirthDate = architect.BirthDate;
             existingArchitect.Biography = architect.Biography;
             var imagePath = await _imageService.SaveImageAsync(imageDTO);
-            existingArchitect.Picture = imagePath.FirstOrDefault()??null;
+            existingArchitect.Picture = imagePath.FirstOrDefault();
             existingArchitect.Verified = architect.Verified;
             existingArchitect.Trending = architect.Trending;
             existingArchitect.Training = architect.Training;
@@ -116,7 +125,7 @@ namespace framework_backend.Controllers
                 if (project == null)
                 {
                     Console.WriteLine($"Project not found for ProjectId {pc.ProjectId}");
-                    continue; 
+                    continue;
                 }
 
 
@@ -127,6 +136,6 @@ namespace framework_backend.Controllers
 
             return Ok(projects);
         }
-        
+
     }
 }
