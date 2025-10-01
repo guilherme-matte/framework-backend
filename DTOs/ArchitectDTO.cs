@@ -17,16 +17,16 @@ namespace framework_backend.DTOs
         public ArchitectSocialMedia SocialMedia { get; set; }
         public ArchitectStats Stats { get; set; }
         public Location Location { get; set; }
-
         public IFormFile Image { get; set; }
+        public string ImageUrl { get; set; }
     }
     public class ArchitectUpdateForm
     {
         [FromForm(Name = "data")]
         public string Data { get; set; } = null!;
 
-        [FromForm(Name = "File")]
-        public IFormFile? File { get; set; }
+        [FromForm(Name = "file")]
+        public IFormFile? Img { get; set; }
     }
 
 }

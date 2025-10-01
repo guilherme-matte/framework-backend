@@ -1,7 +1,8 @@
 ﻿using framework_backend.DTOs;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.PixelFormats;
 
 
 namespace framework_backend.Services
@@ -14,7 +15,7 @@ namespace framework_backend.Services
     }
     public class ImageService
     {
-        public async Task CompressImageAsync(Stream input, Stream output)
+        public async Task SaveCompressedImageAsync(Stream input, Stream output)
         {
             input.Position = 0;
             using var image = await Image.LoadAsync(input);
@@ -27,56 +28,45 @@ namespace framework_backend.Services
 
             await image.SaveAsync(output, encoder);
         }
-
+        public bool ContainsImage(string source, int id)
+        {
+            var path = Path.Combine("wwwroot/img", source, id.ToString());
+            return Directory.Exists(path) && Directory.GetFiles(path).Length > 0;
+        }
         private bool IsValidImage(IFormFile file)
         {
-            long maxFileSize = 25 * 1024 * 1024; // 25MB
+            long maxFileSize = 5 * 1024 * 1024; // 5MB
+            if (file.Length > maxFileSize || file.Length < 8) return false;
 
-            if (file.Length > maxFileSize) return false;
-            
-            if (file.Length < 8) return false;
-
-            byte[] buffer = new byte[8];
-            using (var stream = file.OpenReadStream())
+            try
             {
-                stream.Read(buffer, 0, buffer.Length);
+                using var stream = file.OpenReadStream();
+                var result = Image.Load<Rgba32>(stream);
+                return result != null;
+            }
+            catch
+            {
+                return false;
             }
 
-            // PNG
-            if (buffer[0] == 0x89 &&
-                buffer[1] == 0x50 &&
-                buffer[2] == 0x4E &&
-                buffer[3] == 0x47 &&
-                buffer[4] == 0x0D &&
-                buffer[5] == 0x0A &&
-                buffer[6] == 0x1A &&
-                buffer[7] == 0x0A)
-                return true;
-
-            // JPEG
-            if (buffer[0] == 0xFF &&
-                buffer[1] == 0xD8 &&
-                buffer[2] == 0xFF)
-                return true;
-
-
-
-            return false;
         }
         public async Task<List<string>> SaveImageAsync(ImageDTO dto)
         {
 
             if (dto.Images == null || !dto.Images.Any()) throw new ArgumentException("Imagem inexistente");
-            string baseDirectory = Path.Combine("wwwroot/img", dto.Source, dto.Id.ToString());
+            string baseDirectory = Path.Combine("wwwroot/img", dto.Source, dto.SourceId.ToString());
+
+            
 
             if (!Directory.Exists(baseDirectory))
             {
                 Directory.CreateDirectory(baseDirectory);
             }
+            
             var urls = new List<string>();
             foreach (var img in dto.Images)
             {
-                //if (!IsValidImage(img)) throw new ArgumentException("Imagem inválida");
+                if (!IsValidImage(img)) throw new ArgumentException("Imagem inválida");
                 if (img.Length > 0)
                 {
                     var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(img.FileName)}";
@@ -84,12 +74,34 @@ namespace framework_backend.Services
 
                     using var inputStream = img.OpenReadStream();
                     using var outputStream = new FileStream(filePath, FileMode.Create);
-                    await CompressImageAsync(inputStream, outputStream);
+                    await SaveCompressedImageAsync(inputStream, outputStream);
 
-                    urls.Add($"/img/{dto.Source}/{dto.Id}/{fileName}");
+                    urls.Add($"/img/{dto.Source}/{dto.SourceId}/{fileName}");
                 }
             }
             return urls;
+        }
+        public void DeleteImage(string filePath)
+        {
+            try
+            {
+                var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img");// Define o diretório raiz permitido
+
+                if (!Path.GetFullPath(filePath).StartsWith(rootPath)) throw new UnauthorizedAccessException("Caminho inválido.");
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                else
+                {
+                    throw new FileNotFoundException("Imagem não encontrada.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Erro ao deletar imagem.", ex);
+            }
 
         }
     }

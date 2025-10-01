@@ -2,10 +2,8 @@
 using framework_backend.DTOs;
 using framework_backend.Models;
 using framework_backend.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace framework_backend.Controllers
@@ -64,18 +62,24 @@ namespace framework_backend.Controllers
             {
                 PropertyNameCaseInsensitive = true
             });
-            
+            Console.WriteLine($"Deserialized ArchitectDTO: {JsonSerializer.Serialize(architect)}");
+            Console.WriteLine($"Received Image: {(form.Img != null ? form.Img.FileName : "No Image")}");
             var existingArchitect = await _context.Architects.FindAsync(id);
 
             if (existingArchitect == null) return NotFound();
             ImageDTO imageDTO = new ImageDTO
             {
-                Id = existingArchitect.Id,
+                SourceId = existingArchitect.Id,
                 Source = ImageSource.Architects.ToString(),
-                Images = new List<IFormFile> { form.File }
+                Images = new List<IFormFile> { form.Img }
             };
 
-            if (form.File == null || form.File.Length == 0) return BadRequest("Imagem inexistente");
+
+
+            if (form.Img == null || form.Img.Length == 0) return BadRequest("Imagem inexistente");
+            
+            
+
             existingArchitect.Name = architect.Name;
             existingArchitect.Nationality = architect.Nationality;
             existingArchitect.Subtitle = architect.Subtitle;

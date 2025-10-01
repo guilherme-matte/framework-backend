@@ -1,9 +1,22 @@
 ﻿using framework_backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Text.Json;
 
 namespace framework_backend.Data
 {
+    public class StringListToJsonConverter : ValueConverter<List<string>, string>
+    {
+        public StringListToJsonConverter()
+            : base(
+                v => JsonSerializer.Serialize(v ?? new List<string>(), (JsonSerializerOptions)null),
+                v => string.IsNullOrEmpty(v)
+                    ? new List<string>()
+                    : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null))
+        {
+        }
+    }
+
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -11,25 +24,22 @@ namespace framework_backend.Data
         public DbSet<ArchitectModel> Architects { get; set; }
         public DbSet<ProjectModel> Projects { get; set; }
         public DbSet<ProjectContributors> ProjectContributors { get; set; }
+        public DbSet<NewsLetterModel> NewsLetter { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<ArchitectModel>()
-     .Property(a => a.Speciality)
-     .HasConversion(
-         v => JsonSerializer.Serialize(v ?? new List<string>(), (JsonSerializerOptions)null),
-         v => string.IsNullOrEmpty(v)
-             ? new List<string>()
-             : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null));
-       
+            modelBuilder.Entity<NewsLetterModel>()
+                .Property(e => e.Tags)
+                .HasConversion(new StringListToJsonConverter());
 
-            // Serializar lista de especialidades do arquiteto
+            modelBuilder.Entity<NewsLetterModel>()
+                .Property(e => e.BulletPoint)
+                .HasConversion(new StringListToJsonConverter());
+
             modelBuilder.Entity<ArchitectModel>()
-                .Property(a => a.Speciality)
-                .HasConversion(
-                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
-                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)
-                );
+                .Property(e => e.Speciality)
+                .HasConversion(new StringListToJsonConverter());
+
             modelBuilder.Entity<ProjectModel>()
                 .Property(p => p.Images)
                 .HasConversion(
@@ -58,7 +68,7 @@ namespace framework_backend.Data
 
             modelBuilder.Entity<ProjectContributors>()
                 .HasOne(pc => pc.Architect)
-                .WithMany() 
+                .WithMany()
                 .HasForeignKey(pc => pc.ArchitectId);
 
             base.OnModelCreating(modelBuilder);

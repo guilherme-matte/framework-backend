@@ -15,7 +15,7 @@ namespace framework_backend.Models
         public string Picture { get; set; }//armazena URL da foto de perfil
 
         public bool Verified { get; set; }
-        public bool Trending { get; set; }//não encontrei nome melhor para destaques
+        public bool Trending { get; set; }//Destaques
         public ArchitectTraining Training { get; set; }
         public ArchitectSocialMedia SocialMedia { get; set; }
         public ArchitectStats Stats { get; set; }
@@ -43,5 +43,11 @@ namespace framework_backend.Models
         public string Name { get; set; }
         public int Year { get; set; }
     }
-
+    [Owned]
+    public class Location
+    {
+        public string City { get; set; }
+        public string Country { get; set; }
+        public string State { get; set; }
+    }
 }

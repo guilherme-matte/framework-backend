@@ -23,7 +23,7 @@ public class FileUploadOperationFilter : IOperationFilter
                         Properties =
                         {
                             ["data"] = new OpenApiSchema { Type = "string", Description = "JSON do objeto" },
-                            ["Image"] = new OpenApiSchema { Type = "string", Format = "binary" }
+                            ["file"] = new OpenApiSchema { Type = "string", Format = "binary" }
                         },
                         Required = new HashSet<string> { "data" }
                     }
