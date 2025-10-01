@@ -24,6 +24,18 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddCors(options =>
 {
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("https://framework-frontend-pearl.vercel.app")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("AllowAll", policy =>
     {
         policy
@@ -63,7 +75,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 app.MapControllers();
 
 app.Run();
