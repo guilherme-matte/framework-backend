@@ -16,6 +16,17 @@ namespace framework_backend.Data
         {
         }
     }
+    public class ObjectListToJsonConverter<T> : ValueConverter<List<T>, string>
+    {
+        public ObjectListToJsonConverter()
+            : base(
+                v => JsonSerializer.Serialize(v ?? new List<T>(), (JsonSerializerOptions)null),
+                v => string.IsNullOrEmpty(v)
+                    ? new List<T>()
+                    : JsonSerializer.Deserialize<List<T>>(v, (JsonSerializerOptions)null))
+        {
+        }
+    }
 
     public class AppDbContext : DbContext
     {
@@ -27,6 +38,10 @@ namespace framework_backend.Data
         public DbSet<NewsLetterModel> NewsLetter { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<NewsLetterModel>()
+                .Property(e => e.Images)
+                .HasConversion(new ObjectListToJsonConverter<NewsLetterImages>());
+
 
             modelBuilder.Entity<NewsLetterModel>()
                 .Property(e => e.Tags)

@@ -11,7 +11,7 @@ namespace framework_backend.Services
     {
         Projects,
         Architects,
-        Other
+        News
     }
     public class ImageService
     {

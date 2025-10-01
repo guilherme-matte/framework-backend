@@ -1,17 +1,27 @@
-﻿namespace framework_backend.Models
+﻿using framework_backend.DTOs;
+
+namespace framework_backend.Models
 {
     public class NewsLetterModel
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public DateOnly Date {  get; set; }
+        public DateOnly Date { get; set; }
         public string Excerpt { get; set; }
         public string Category { get; set; }
 
         public List<string> Tags { get; set; }
         public List<string> BulletPoint { get; set; }
 
-        public int Views { get; set; }
-        public int Likes { get; set; }
+        public int Views { get; set; } = 0;
+        public int Likes { get; set; } = 0;
+
+        public List<NewsLetterImages>? Images { get; set; } = new List<NewsLetterImages> { };
+
+    }
+    public class NewsLetterImages
+    {
+        public string Image { get; set; }
+        public bool first { get; set; }
     }
 }

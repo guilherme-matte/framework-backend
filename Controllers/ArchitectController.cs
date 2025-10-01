@@ -62,8 +62,6 @@ namespace framework_backend.Controllers
             {
                 PropertyNameCaseInsensitive = true
             });
-            Console.WriteLine($"Deserialized ArchitectDTO: {JsonSerializer.Serialize(architect)}");
-            Console.WriteLine($"Received Image: {(form.Img != null ? form.Img.FileName : "No Image")}");
             var existingArchitect = await _context.Architects.FindAsync(id);
 
             if (existingArchitect == null) return NotFound();
