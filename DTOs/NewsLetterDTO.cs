@@ -5,8 +5,13 @@ namespace framework_backend.DTOs
 {
     public class NewsLetterDTO
     {
+        [FromForm] public string Title { get; set; }
+        [FromForm] public DateOnly Date { get; set; }
+        [FromForm] public string Excerpt { get; set; }
+        [FromForm] public string Category { get; set; }
+        [FromForm] public string Tags { get; set; }
+        [FromForm] public string BulletPoint { get; set; }
 
-        public string Data { get; set; }
 
         public List<IFormFile> Files { get; set; }
 

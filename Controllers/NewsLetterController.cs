@@ -1,5 +1,6 @@
 ﻿using framework_backend.Data;
 using framework_backend.DTOs;
+using framework_backend.Filter;
 using framework_backend.Models;
 using framework_backend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +9,8 @@ using System.Text.Json;
 
 namespace framework_backend.Controllers
 {
-    //[ApiController]
-    //[Route("/api/news")]
+    [ApiController]
+    [Route("/api/news")]
     public class NewsLetterController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -24,7 +25,7 @@ namespace framework_backend.Controllers
 
         private string ValidateForm(NewsLetterDTO dto)
         {
-            if (string.IsNullOrEmpty(dto.Data))
+            if (dto==null)
                 return "Dados não enviados";
 
             if (dto.FirstFlags == null || !dto.FirstFlags.Any())
@@ -65,13 +66,29 @@ namespace framework_backend.Controllers
         }
         [HttpPost]
         [Consumes("multipart/form-data")]
+
         public async Task<ActionResult> CreateNewsLetter([FromForm] NewsLetterDTO form)
         {
             string error = ValidateForm(form);
             if (error != null) return BadRequest(error);
+            Console.WriteLine($"Content-Type do campo Data: {Request.ContentType}");
+            Console.WriteLine($"Valor recebido: {form}");
 
-            var news = JsonSerializer.Deserialize<NewsLetterModel>(form.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var tags = JsonSerializer.Deserialize<List<string>>(form.Tags);
+            var bulletPoints = JsonSerializer.Deserialize<List<string>>(form.BulletPoint);
 
+
+
+            var news = new NewsLetterModel
+            {
+                Title = form.Title,
+                Date = form.Date,
+                Excerpt = form.Excerpt,
+                Category = form.Category,
+                Tags = tags,
+                BulletPoint = bulletPoints,
+                Images = new List<NewsLetterImages>()
+            };
             _context.NewsLetter.Add(news);
             await _context.SaveChangesAsync();
 

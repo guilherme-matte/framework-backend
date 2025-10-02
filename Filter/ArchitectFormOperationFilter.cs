@@ -45,7 +45,7 @@ public class ArchitectFormOperationFilter : IOperationFilter
                                     ""SocialMedia"": {
                                         ""Instagram"": ""INSTAGRAM"",
                                         ""Linkedin"": ""LINKEDIN"",
-                                        ""Portifolio"": ""PORTIFOLIO""
+                                        ""Portfolio"": ""PORTIFOLIO""
                                     },
                                     ""Location"": {
                                         ""City"": ""CIDADE"",

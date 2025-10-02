@@ -1,4 +1,5 @@
 using framework_backend.Data;
+using framework_backend.Filter;
 using framework_backend.Models;
 using framework_backend.Services;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +17,19 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddScoped<NewsLetterFormOperationFilter>();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Framework API", Version = "v1" });
     c.OperationFilter<ArchitectFormOperationFilter>();
+    c.OperationFilter<NewsLetterFormOperationFilter>();
+
 
 
 });
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -46,7 +53,6 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddScoped<ImageService>();
-builder.Services.AddControllers();
 
 
 var app = builder.Build();
