@@ -27,7 +27,14 @@ namespace framework_backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ArchitectModel>>> GetArchitects()
         {
-            return await _context.Architects.ToListAsync();
+            var architects = await _context.Architects.ToListAsync();
+
+            if (architects != null && architects.Any())
+            {
+                return architects;
+            }
+
+            return NoContent();
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<ArchitectModel>> GetArchitect(int id)
@@ -57,7 +64,7 @@ namespace framework_backend.Controllers
         {
 
             if (string.IsNullOrWhiteSpace(form.Data)) return BadRequest("Dados do arquiteto não enviados.");
-
+            Console.WriteLine(form.Data);
             var architect = JsonSerializer.Deserialize<ArchitectDTO>(form.Data, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -75,8 +82,8 @@ namespace framework_backend.Controllers
 
 
             if (form.Img == null || form.Img.Length == 0) return BadRequest("Imagem inexistente");
-            
-            
+
+
 
             existingArchitect.Name = architect.Name;
             existingArchitect.Nationality = architect.Nationality;
@@ -85,16 +92,13 @@ namespace framework_backend.Controllers
             existingArchitect.Biography = architect.Biography;
             var imagePath = await _imageService.SaveImageAsync(imageDTO);
             existingArchitect.Picture = imagePath.FirstOrDefault();
-            existingArchitect.Verified = architect.Verified;
-            existingArchitect.Trending = architect.Trending;
             existingArchitect.Training = architect.Training;
             existingArchitect.SocialMedia = architect.SocialMedia;
-            existingArchitect.Stats = architect.Stats;
             existingArchitect.Location = architect.Location;
             existingArchitect.Speciality = architect.Speciality;
 
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok();
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteArchitect(int id)
@@ -109,13 +113,10 @@ namespace framework_backend.Controllers
         public async Task<ActionResult<IEnumerable<List<ProjectDTO>>>> GetProjectsByUserId(int id)
         {
 
-
             var projectContributors = await _context.ProjectContributors
                 .Where(pc => pc.ArchitectId == id)
                 .ToListAsync();
 
-            Console.WriteLine($"Found {projectContributors.Count} project contributors for architect ID {id}");
-            Console.WriteLine($"Project Contributors: {System.Text.Json.JsonSerializer.Serialize(projectContributors)}");
             var projects = new List<ProjectDTO>();
             foreach (var pc in projectContributors)
             {
@@ -124,12 +125,7 @@ namespace framework_backend.Controllers
                     .ThenInclude(c => c.Architect)
                     .FirstOrDefaultAsync(p => p.Id == pc.ProjectId);
 
-                if (project == null)
-                {
-                    Console.WriteLine($"Project not found for ProjectId {pc.ProjectId}");
-                    continue;
-                }
-
+                if (project == null) continue;
 
                 var dto = await _projectResponseService.ProjectResponse(project);
 

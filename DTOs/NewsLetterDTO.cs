@@ -1,11 +1,17 @@
 ﻿using framework_backend.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace framework_backend.DTOs
 {
     public class NewsLetterDTO
     {
+
         public string Data { get; set; }
-        public List<NewsLetterImagesDTO>? Files { get; set; }
+
+        public List<IFormFile> Files { get; set; }
+
+        public List<bool> FirstFlags { get; set; }
+
     }
     public class NewsLetterImagesDTO
     {

@@ -19,7 +19,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Framework API", Version = "v1" });
-    c.OperationFilter<FileUploadOperationFilter>();
+    c.OperationFilter<ArchitectFormOperationFilter>();
+
 
 });
 builder.Services.AddCors(options =>
@@ -71,6 +72,12 @@ app.UseStaticFiles(new StaticFileOptions
         Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "img")),
     RequestPath = "/img"
 });
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Origin: {context.Request.Headers["Origin"]}");
+    await next();
+});
+
 
 
 app.UseHttpsRedirection();

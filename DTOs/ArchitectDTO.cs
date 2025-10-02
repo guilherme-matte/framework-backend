@@ -11,21 +11,18 @@ namespace framework_backend.DTOs
         public DateOnly BirthDate { get; set; }
         public string Biography { get; set; }
         public List<string> Speciality { get; set; } = new();
-        public bool Verified { get; set; }
-        public bool Trending { get; set; }
         public ArchitectTraining Training { get; set; }
         public ArchitectSocialMedia SocialMedia { get; set; }
-        public ArchitectStats Stats { get; set; }
         public Location Location { get; set; }
         public IFormFile Image { get; set; }
         public string ImageUrl { get; set; }
     }
     public class ArchitectUpdateForm
     {
-        [FromForm(Name = "data")]
+        [FromForm(Name = "Data")]
         public string Data { get; set; } = null!;
 
-        [FromForm(Name = "file")]
+        [FromForm(Name = "File")]
         public IFormFile? Img { get; set; }
     }
 
