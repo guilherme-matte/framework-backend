@@ -79,6 +79,9 @@ app.Use(async (context, next) =>
     await next();
 });
 
+app.MapGet("/", () => Results.Ok(new { status = "ok", now = DateTime.UtcNow }));
+// Se MapGet não aceita HEAD automaticamente, garanta:
+app.MapMethods("/", new[] { "HEAD", "GET" }, () => Results.Ok());
 
 
 
