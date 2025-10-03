@@ -30,17 +30,7 @@ builder.Services.AddSwaggerGen(c =>
 
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy
-            .WithOrigins("https://framework-frontend-pearl.vercel.app")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
-    });
-});
+
 
 
 builder.Services.AddScoped<ImageService>();
@@ -74,9 +64,30 @@ app.Use(async (context, next) =>
     Console.WriteLine($"Origin: {context.Request.Headers["Origin"]}");
     await next();
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyWithCredentials", policy =>
+    {
+        policy
+            .SetIsOriginAllowed(origin => true) // aceita qualquer origem
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("https://framework-frontend-pearl.vercel.app")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
 
-
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAnyWithCredentials");
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
