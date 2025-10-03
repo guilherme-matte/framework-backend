@@ -42,27 +42,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAnyWithCredentials", policy =>
-    {
-        policy
-            .SetIsOriginAllowed(origin => true) // aceita qualquer origem
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
-    });
-});
+
 
 
 builder.Services.AddScoped<ImageService>();
@@ -99,12 +79,11 @@ app.Use(async (context, next) =>
 
 
 
-app.UseCors("AllowAll");
+
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
 
-app.UseAuthorization();
+app.UseCors("AllowFrontend");
 app.MapControllers();
 
 app.Run();
