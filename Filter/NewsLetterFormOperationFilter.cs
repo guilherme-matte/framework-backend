@@ -37,35 +37,16 @@ namespace framework_backend.Filter
                                     ""BulletPoint"": [""ponto 1"", ""ponto 2""]
                                 }")
                             },
-                            ["Files"] = new OpenApiSchema
+                            ["File"] = new OpenApiSchema
                             {
-                                Type = "array",
-                                Items = new OpenApiSchema
-                                {
-                                    Type = "string",
-                                    Format = "binary"
-                                },
-                                Description = "Arquivos de imagem da newsletter"
-                            },
-                            ["FirstFlags"] = new OpenApiSchema
-                            {
-                                Type = "array",
-                                Items = new OpenApiSchema
-                                {
-                                    Type = "boolean"
-                                },
-                                Description = "Flags booleanas para cada imagem"
+                                Type = "string",
+                                Format = "binary",
+                                Description = "Imagem de perfil do arquiteto"
                             }
                         },
                         Required = new HashSet<string> { "Data" }
                     },
-                    Encoding = new Dictionary<string, OpenApiEncoding>
-                    {
-                        ["Data"] = new OpenApiEncoding { ContentType="text/plain",
-                            Style = ParameterStyle.Form },
-                        ["Files"] = new OpenApiEncoding { Style = ParameterStyle.Form },
-                        ["FirstFlags"] = new OpenApiEncoding { Style = ParameterStyle.Form }
-                    }
+                   
                 }
             }
             };

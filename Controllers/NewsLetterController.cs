@@ -27,14 +27,8 @@ namespace framework_backend.Controllers
         {
             if (dto==null)
                 return "Dados não enviados";
-
-            if (dto.FirstFlags == null || !dto.FirstFlags.Any())
-                return "Flag de imagem principal não enviada";
-
-            if (dto.FirstFlags.Count(f => f) > 1)
-                return "Apenas uma imagem pode ser marcada como principal";
-
-            if (dto.Files == null || !dto.Files.Any())
+                        
+            if (dto.File == null)
                 return "Imagens não enviadas";
 
             return null; 
@@ -71,48 +65,25 @@ namespace framework_backend.Controllers
         {
             string error = ValidateForm(form);
             if (error != null) return BadRequest(error);
-            Console.WriteLine($"Content-Type do campo Data: {Request.ContentType}");
-            Console.WriteLine($"Valor recebido: {form}");
+           
+            var news = JsonSerializer.Deserialize<NewsLetterModel>(form.Data);
 
-            var tags = JsonSerializer.Deserialize<List<string>>(form.Tags);
-            var bulletPoints = JsonSerializer.Deserialize<List<string>>(form.BulletPoint);
+            await _context.NewsLetter.AddAsync(news);
 
-
-
-            var news = new NewsLetterModel
+            ImageDTO imageDTO = new ImageDTO
             {
-                Title = form.Title,
-                Date = form.Date,
-                Excerpt = form.Excerpt,
-                Category = form.Category,
-                Tags = tags,
-                BulletPoint = bulletPoints,
-                Images = new List<NewsLetterImages>()
-            };
-            _context.NewsLetter.Add(news);
-            await _context.SaveChangesAsync();
-
-            var images = form.Files.Select(f => f).ToList();
-
-            var urls = await _imageService.SaveImageAsync(new ImageDTO
-            {
-                Source = ImageSource.News.ToString(),
                 SourceId = news.Id,
-                Images = images
-            });
+                Source = ImageSource.Architects.ToString(),
+                Images = new List<IFormFile> { form.File }
+            };
+            var imagePath = await _imageService.SaveImageAsync(imageDTO);
 
-            for (int i = 0; i < urls.Count; i++)
-            {
-                NewsLetterImages img = new NewsLetterImages();
-                img.first = form.FirstFlags[i];
-                img.Image = urls[i];
-
-                news.Images.Add(img);
-            }
-
-            _context.NewsLetter.Update(news);
+            news.Images = imagePath.FirstOrDefault();
+            
+            
             await _context.SaveChangesAsync();
-            return Ok(news);
+
+            return CreatedAtAction(nameof(GetNewsById), new { id = news.Id }, news);
 
         }
     }

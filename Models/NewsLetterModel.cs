@@ -16,12 +16,8 @@ namespace framework_backend.Models
         public int Views { get; set; } = 0;
         public int Likes { get; set; } = 0;
 
-        public List<NewsLetterImages>? Images { get; set; } = new List<NewsLetterImages> { };
+        public string Images { get; set; }
 
     }
-    public class NewsLetterImages
-    {
-        public string Image { get; set; }
-        public bool first { get; set; }
-    }
+    
 }

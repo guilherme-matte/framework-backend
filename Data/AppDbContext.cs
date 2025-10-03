@@ -38,9 +38,7 @@ namespace framework_backend.Data
         public DbSet<NewsLetterModel> NewsLetter { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<NewsLetterModel>()
-                .Property(e => e.Images)
-                .HasConversion(new ObjectListToJsonConverter<NewsLetterImages>());
+           
 
 
             modelBuilder.Entity<NewsLetterModel>()
