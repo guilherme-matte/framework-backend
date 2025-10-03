@@ -111,7 +111,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // HTTPS redirect
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // CORS must be before auth/controllers
 app.UseCors("AllowFrontend");
