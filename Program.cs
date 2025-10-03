@@ -74,6 +74,8 @@ app.UseStaticFiles(new StaticFileOptions
 app.Use(async (context, next) =>
 {
     Console.WriteLine($"Origin: {context.Request.Headers["Origin"]}");
+    Console.WriteLine($"{DateTime.UtcNow:o} Remote:{context.Connection.RemoteIpAddress} Method:{context.Request.Method} Path:{context.Request.Path} Origin:{context.Request.Headers["Origin"]} Referer:{context.Request.Headers["Referer"]} UA:{context.Request.Headers["User-Agent"]}");
+   
     await next();
 });
 
@@ -81,10 +83,12 @@ app.Use(async (context, next) =>
 
 
 
+
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowFrontend");
 app.MapControllers();
 
 app.Run();
