@@ -59,7 +59,10 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
-
+app.MapGet("/api/test", () =>
+{
+    return Results.Ok();
+});
 // Exception handler middleware - put it as early as possible
 app.Use(async (context, next) =>
 {
