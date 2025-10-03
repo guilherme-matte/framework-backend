@@ -99,7 +99,7 @@ app.Use(async (context, next) =>
 
 
 
-app.UseCors("AllowAnyWithCredentials");
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
