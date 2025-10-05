@@ -64,7 +64,7 @@ namespace framework_backend.Controllers
         {
 
             if (string.IsNullOrWhiteSpace(form.data)) return BadRequest("Dados do arquiteto não enviados.");
-            Console.WriteLine(form.data);
+            Console.WriteLine("Data recebido: ",form.data);
             var architect = JsonSerializer.Deserialize<ArchitectDTO>(form.data, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
