@@ -1,10 +1,8 @@
 using framework_backend.Data;
 using framework_backend.Filter;
-using framework_backend.Models;
 using framework_backend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,10 +30,10 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
         policy
-            .WithOrigins("https://framework-frontend-pearl.vercel.app", "http://localhost:3000")
+            .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -78,7 +76,7 @@ app.Use(async (context, next) =>
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
