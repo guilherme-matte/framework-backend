@@ -35,23 +35,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .WithOrigins("https://framework-frontend-pearl.vercel.app")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
-    });
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
+            .WithOrigins("https://framework-frontend-pearl.vercel.app", "http://localhost:3000")
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
 });
+
+
 builder.Services.AddScoped<ImageService>();
 
 
