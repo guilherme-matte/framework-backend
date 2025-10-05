@@ -27,7 +27,7 @@ public class ArchitectFormOperationFilter : IOperationFilter
                         Type = "object",
                         Properties = new Dictionary<string, OpenApiSchema>
                         {
-                            ["Data"] = new OpenApiSchema
+                            ["data"] = new OpenApiSchema
                             {
                                 Type = "string",
                                 Description = "JSON serializado do ArchitectDTO",
@@ -57,14 +57,14 @@ public class ArchitectFormOperationFilter : IOperationFilter
 
 
                             },
-                            ["File"] = new OpenApiSchema
+                            ["file"] = new OpenApiSchema
                             {
                                 Type = "string",
                                 Format = "binary",
                                 Description = "Imagem de perfil do arquiteto"
                             }
                         },
-                        Required = new HashSet<string> { "Data", "File" }
+                        Required = new HashSet<string> { "data", "file" }
                     }
                 }
             }

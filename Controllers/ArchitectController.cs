@@ -63,9 +63,9 @@ namespace framework_backend.Controllers
         public async Task<ActionResult> UpdateArchitect(int id, [FromForm] ArchitectUpdateForm form)
         {
 
-            if (string.IsNullOrWhiteSpace(form.Data)) return BadRequest("Dados do arquiteto não enviados.");
-            Console.WriteLine(form.Data);
-            var architect = JsonSerializer.Deserialize<ArchitectDTO>(form.Data, new JsonSerializerOptions
+            if (string.IsNullOrWhiteSpace(form.data)) return BadRequest("Dados do arquiteto não enviados.");
+            Console.WriteLine(form.data);
+            var architect = JsonSerializer.Deserialize<ArchitectDTO>(form.data, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
@@ -76,12 +76,12 @@ namespace framework_backend.Controllers
             {
                 SourceId = existingArchitect.Id,
                 Source = ImageSource.Architects.ToString(),
-                Images = new List<IFormFile> { form.Img }
+                Images = new List<IFormFile> { form.file }
             };
 
 
 
-            if (form.Img == null || form.Img.Length == 0) return BadRequest("Imagem inexistente");
+            if (form.file == null || form.file.Length == 0) return BadRequest("Imagem inexistente");
 
 
 

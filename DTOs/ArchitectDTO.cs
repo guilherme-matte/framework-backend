@@ -19,11 +19,11 @@ namespace framework_backend.DTOs
     }
     public class ArchitectUpdateForm
     {
-        [FromForm(Name = "Data")]
-        public string Data { get; set; } = null!;
+        [FromForm(Name = "data")]
+        public string data { get; set; } = null!;
 
-        [FromForm(Name = "File")]
-        public IFormFile? Img { get; set; }
+        [FromForm(Name = "file")]
+        public IFormFile? file { get; set; }
     }
 
 }
