@@ -24,7 +24,7 @@ namespace framework_backend.Filter
                         Type = "object",
                         Properties = new Dictionary<string, OpenApiSchema>
                         {
-                            ["Data"] = new OpenApiSchema
+                            ["data"] = new OpenApiSchema
                             {
                                 Type = "string",
                                 Description = "JSON serializado do NewsLetterModel",
@@ -37,11 +37,11 @@ namespace framework_backend.Filter
                                     ""BulletPoint"": [""ponto 1"", ""ponto 2""]
                                 }")
                             },
-                            ["File"] = new OpenApiSchema
+                            ["file"] = new OpenApiSchema
                             {
                                 Type = "string",
                                 Format = "binary",
-                                Description = "Imagem de perfil do arquiteto"
+                                Description = "Imagem principal da notícia"
                             }
                         },
                         Required = new HashSet<string> { "Data" }

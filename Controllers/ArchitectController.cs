@@ -29,7 +29,7 @@ namespace framework_backend.Controllers
         {
             var architects = await _context.Architects.ToListAsync();
 
-            if (architects != null && architects.Any())
+            if (architects != null && architects.Count != 0)
             {
                 return architects;
             }

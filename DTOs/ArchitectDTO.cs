@@ -14,8 +14,7 @@ namespace framework_backend.DTOs
         public ArchitectTraining Training { get; set; }
         public ArchitectSocialMedia SocialMedia { get; set; }
         public Location Location { get; set; }
-        public IFormFile Image { get; set; }
-        public string ImageUrl { get; set; }
+        public bool ImageChanged { get; set; }
     }
     public class ArchitectUpdateForm
     {

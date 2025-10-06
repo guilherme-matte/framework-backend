@@ -17,13 +17,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<NewsLetterFormOperationFilter>();
-
+builder.Services.AddScoped<ProjectFormOperationFilter>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Framework API", Version = "v1" });
     c.OperationFilter<ArchitectFormOperationFilter>();
     c.OperationFilter<NewsLetterFormOperationFilter>();
-
+    c.OperationFilter<ProjectFormOperationFilter>();
 
 
 });

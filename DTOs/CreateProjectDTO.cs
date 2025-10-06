@@ -2,11 +2,11 @@
 
 public class CreateProjectDTO
 {
-    public CreateProjectDataDTO Project { get; set; }
-    
-    public List<ArchitectAndRole> Architects { get; set; }
-    
-//    public List<IFormFile> Images { get; set; }
+    [FromForm(Name = "data")]
+    public string data { get; set; } = null!;
+
+    [FromForm(Name = "files")]
+    public List<IFormFile> files { get; set; }
 }
 
 public class CreateProjectDataDTO
@@ -18,6 +18,7 @@ public class CreateProjectDataDTO
     public CreateLocationDTO Location { get; set; }
     public List<string> Images { get; set; } = new();
     public bool ESG { get; set; }
+    public List<ArchitectAndRole> Architects { get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
     public bool Ongoing { get; set; }

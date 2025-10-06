@@ -2,9 +2,10 @@
 using framework_backend.DTOs;
 using framework_backend.Models;
 using framework_backend.Services;
-using Microsoft.AspNetCore.Cors;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace framework_backend.Controllers
 {
@@ -19,6 +20,7 @@ namespace framework_backend.Controllers
         {
             _context = context;
             _projectResponseService = new ProjectResponseService(_context);
+            _imageService = new ImageService();
         }
 
         [HttpGet]
@@ -42,48 +44,57 @@ namespace framework_backend.Controllers
             return Ok(projectsDto);
         }
         [HttpPost]
-        public async Task<ActionResult<CreateProjectDTO>> CreateProject(CreateProjectDTO dto)
+        public async Task<ActionResult<CreateProjectDTO>> CreateProject(CreateProjectDTO form)
         {
-            if (dto.Project == null || dto.Architects == null || !dto.Architects.Any())
-                return BadRequest("Projeto e arquitetos são obrigatórios.");
-            var architectIds = dto.Architects.Select(a => a.ArchitectId).ToList();
+            string error = validateForm(form);
+            if (error != null)
+            {
+                return BadRequest(error);
+            }
+            Console.WriteLine("Data recebido: ", form.data);
+            var projectDto = JsonSerializer.Deserialize<CreateProjectDataDTO>(form.data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            var architectIds = projectDto.Architects.Select(a => a.ArchitectId).ToList();
             var existingArchitects = await _context.Architects
                                                .Where(a => architectIds.Contains(a.Id))
                                                .ToListAsync();
 
             var projectModel = new ProjectModel
             {
-                Title = dto.Project.Title,
-                ShortDescription = dto.Project.ShortDescription,
-                LongDescription = dto.Project.LongDescription,
-                Area = dto.Project.Area,
+                Title = projectDto.Title,
+                ShortDescription = projectDto.ShortDescription,
+                LongDescription = projectDto.LongDescription,
+                Area = projectDto.Area,
                 Location = new LocationDTO
                 {
-                    City = dto.Project.Location.City,
-                    State = dto.Project.Location.State,
-                    Country = dto.Project.Location.Country,
-                    Address = dto.Project.Location.Address,
+                    City = projectDto.Location.City,
+                    State = projectDto.Location.State,
+                    Country = projectDto.Location.Country,
+                    Address = projectDto.Location.Address,
                     Coordinates = new Coordinates
                     {
-                        Latitude = dto.Project.Location?.Coordinates?.Latitude ?? 0,
-                        Longitude = dto.Project.Location?.Coordinates?.Longitude ?? 0
+                        Latitude = projectDto.Location?.Coordinates?.Latitude ?? 0,
+                        Longitude = projectDto.Location?.Coordinates?.Longitude ?? 0
                     }
                 },
 
-                ESG = dto.Project.ESG,
-                StartDate = dto.Project.StartDate,
-                OnGoing = dto.Project.Ongoing,
+                ESG = projectDto.ESG,
+                StartDate = projectDto.StartDate,
+                OnGoing = projectDto.Ongoing,
 
 
             };
-            if (!dto.Project.Ongoing)
+            if (!projectDto.Ongoing)
             {
-                projectModel.EndDate = dto.Project.EndDate;
+                projectModel.EndDate = projectDto.EndDate;
             }
 
             projectModel.Contributors ??= new List<ProjectContributors>();
 
-            foreach (var ar in dto.Architects)
+            foreach (var ar in projectDto.Architects)
             {
                 var architect = existingArchitects.FirstOrDefault(a => a.Id == ar.ArchitectId);
                 if (architect != null)
@@ -96,38 +107,36 @@ namespace framework_backend.Controllers
                 }
             }
 
-            //using var transaction = await _context.Database.BeginTransactionAsync();
-
-            //try
-            //{
-            //    _context.Projects.Add(projectModel);
-            //    await _context.SaveChangesAsync();
-
-            //    ImageDTO imageDTO = new ImageDTO
-            //    {
-            //        Id = projectModel.Id,
-            //        Source = ImageSource.Projects.ToString(),
-            //        Images = dto.Images
-            //    };
-
-            //    projectModel.Images.AddRange(await _imageService.SaveImageAsync(imageDTO));
-            //    await _context.SaveChangesAsync();
-
-            //    await transaction.CommitAsync();
-            //}
-            //catch
-            //{
-            //    await transaction.RollbackAsync();
-            //    throw;
-            //}
-
-            _context.Projects.Add(projectModel);
+            await _context.Projects.AddAsync(projectModel);
             await _context.SaveChangesAsync();
-            Console.WriteLine("Project saved with ID: " + projectModel.Id);
-            Console.WriteLine("Architect IDs: " + string.Join(", ", architectIds));
-            var projectDto = await _projectResponseService.ProjectResponse(projectModel);
+
+            var imageDTO = new ImageDTO
+            {
+                SourceId = projectModel.Id,
+                Source = ImageSource.Projects.ToString(),
+                Images = form.files
+            };
+
+            projectDto.Images = await _imageService.SaveImageAsync(imageDTO);
+            projectModel.Images = projectDto.Images;
+            await _context.SaveChangesAsync();
+
+            var projectResponse = await _projectResponseService.ProjectResponse(projectModel);
+
             return CreatedAtAction(nameof(GetProjectById), new { projectId = projectModel.Id }, projectDto);
         }
+
+        private string validateForm(CreateProjectDTO form)
+        {
+            if (form == null)
+                return "Dados não enviados";
+
+            if (form.files == null)
+                return "Imagens não enviadas";
+
+            return null;
+        }
+
         [HttpGet("{projectId}")]
         public async Task<ActionResult<ProjectDTO>> GetProjectById(int projectId, [FromQuery] List<int> contributorIds)
         {
