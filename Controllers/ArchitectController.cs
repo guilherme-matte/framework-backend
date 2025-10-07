@@ -5,6 +5,7 @@ using framework_backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace framework_backend.Controllers
 {
@@ -47,6 +48,20 @@ namespace framework_backend.Controllers
 
             return architect;
         }
+
+        [HttpPost("image/test")]
+        public async Task<string> imageUploadTest(IFormFile file) {
+                
+            ImageDTO imageDTO = new ImageDTO();
+
+            imageDTO.SourceId = 123;
+            imageDTO.Source = ImageSource.Architects.ToString();
+            imageDTO.Images = new List<IFormFile> { file };
+            var url = await _imageService.SaveImageAsync(imageDTO);
+            return url.FirstOrDefault();
+        }
+
+
         [HttpPost]
 
         public async Task<ActionResult<IEnumerable<ArchitectModel>>> CreateArchitect(ArchitectModel architect)

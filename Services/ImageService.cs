@@ -1,4 +1,5 @@
 ﻿using framework_backend.DTOs;
+using Imagekit.Sdk;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -7,6 +8,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace framework_backend.Services
 {
+
     public enum ImageSource
     {
         Projects,
@@ -15,6 +17,23 @@ namespace framework_backend.Services
     }
     public class ImageService
     {
+        private readonly ImagekitClient _imageKit;
+
+        public ImageService()
+        {
+            var publicKey = Environment.GetEnvironmentVariable("IMAGEKIT_PUBLIC_KEY");
+            var privateKey = Environment.GetEnvironmentVariable("IMAGEKIT_PRIVATE_KEY");
+            var urlEndpoint = Environment.GetEnvironmentVariable("IMAGEKIT_URL_ENDPOINT");
+
+            if (string.IsNullOrWhiteSpace(publicKey) ||
+                string.IsNullOrWhiteSpace(privateKey) ||
+                string.IsNullOrWhiteSpace(urlEndpoint))
+            {
+                throw new InvalidOperationException("As variáveis de ambiente do ImageKit não estão configuradas.");
+            }
+
+            _imageKit = new ImagekitClient(publicKey, privateKey, urlEndpoint);
+        }
         public async Task SaveCompressedImageAsync(Stream input, Stream output)
         {
             input.Position = 0;
@@ -52,57 +71,54 @@ namespace framework_backend.Services
         }
         public async Task<List<string>> SaveImageAsync(ImageDTO dto)
         {
+            if (dto.Images == null || !dto.Images.Any())
+                throw new ArgumentException("Imagem inexistente");
 
-            if (dto.Images == null || !dto.Images.Any()) throw new ArgumentException("Imagem inexistente");
-            string baseDirectory = Path.Combine("wwwroot/img", dto.Source, dto.SourceId.ToString());
-
-            
-
-            if (!Directory.Exists(baseDirectory))
-            {
-                Directory.CreateDirectory(baseDirectory);
-            }
-            
             var urls = new List<string>();
+
             foreach (var img in dto.Images)
             {
-                if (!IsValidImage(img)) throw new ArgumentException("Imagem inválida");
-                if (img.Length > 0)
+                if (!IsValidImage(img))
+                    throw new ArgumentException("Imagem inválida");
+
+                using var inputStream = img.OpenReadStream();
+                using var compressedStream = new MemoryStream();
+
+                await SaveCompressedImageAsync(inputStream, compressedStream);
+                await compressedStream.FlushAsync();
+
+                compressedStream.Position = 0;
+
+                if (compressedStream.Length < 100)
+                    throw new IOException($"Compressão falhou: stream muito pequeno ({compressedStream.Length} bytes)");
+
+                var imageBytes = compressedStream.ToArray();
+
+                var uploadRequest = new FileCreateRequest
                 {
-                    var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(img.FileName)}";
-                    var filePath = Path.Combine(baseDirectory, fileName);
+                    file = imageBytes,
+                    fileName = $"{Guid.NewGuid()}_{Path.GetFileName(img.FileName)}",
+                    folder = $"/{dto.Source}/{dto.SourceId}"
+                };
 
-                    using var inputStream = img.OpenReadStream();
-                    using var outputStream = new FileStream(filePath, FileMode.Create);
-                    await SaveCompressedImageAsync(inputStream, outputStream);
+                var result = await _imageKit.UploadAsync(uploadRequest);
 
-                    urls.Add($"/img/{dto.Source}/{dto.SourceId}/{fileName}");
+                if (result == null || string.IsNullOrEmpty(result.url))
+                {
+                    throw new IOException("Falha ao enviar imagem para o ImageKit (resposta nula).");
                 }
+
+                urls.Add(result.url.Replace("https://ik.imagekit.io/framework", ""));
             }
+
             return urls;
         }
-        public void DeleteImage(string filePath)
+
+        public async Task DeleteImageAsync(string fileId)
         {
-            try
-            {
-                var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img");// Define o diretório raiz permitido
-
-                if (!Path.GetFullPath(filePath).StartsWith(rootPath)) throw new UnauthorizedAccessException("Caminho inválido.");
-
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-                else
-                {
-                    throw new FileNotFoundException("Imagem não encontrada.");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new IOException("Erro ao deletar imagem.", ex);
-            }
-
+            var result = await _imageKit.DeleteFileAsync(fileId);
+            if (result == null)
+                throw new IOException("Erro ao deletar imagem do ImageKit.");
         }
     }
 }
