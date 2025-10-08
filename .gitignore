@@ -14,4 +14,3 @@ launchSettings.json
 bin/
 obj/
 *.log
-/wwwroot

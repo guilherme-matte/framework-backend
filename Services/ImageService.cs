@@ -1,4 +1,6 @@
 ﻿using framework_backend.DTOs;
+using Imagekit;
+using Imagekit.Models;
 using Imagekit.Sdk;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -47,11 +49,7 @@ namespace framework_backend.Services
 
             await image.SaveAsync(output, encoder);
         }
-        public bool ContainsImage(string source, int id)
-        {
-            var path = Path.Combine("wwwroot/img", source, id.ToString());
-            return Directory.Exists(path) && Directory.GetFiles(path).Length > 0;
-        }
+        
         private bool IsValidImage(IFormFile file)
         {
             long maxFileSize = 5 * 1024 * 1024; // 5MB
@@ -69,17 +67,28 @@ namespace framework_backend.Services
             }
 
         }
+        public async void DeleteAllImages(ImageSource source, int id)
+        {
+            var request = new DeleteFolderRequest
+            {
+                folderPath = $"/{source}/{id}"
+            };
+            var result = await _imageKit.DeleteFolderAsync(request);
+        }
         public async Task<List<string>> SaveImageAsync(ImageDTO dto)
         {
-            if (dto.Images == null || !dto.Images.Any())
-                throw new ArgumentException("Imagem inexistente");
+            if (dto.Images == null || !dto.Images.Any()) throw new ArgumentException("Imagem não enviada");
 
             var urls = new List<string>();
 
+            var overwrite = true;
+            if (dto.Source != ImageSource.Architects.ToString()) overwrite = false;
+
+
             foreach (var img in dto.Images)
             {
-                if (!IsValidImage(img))
-                    throw new ArgumentException("Imagem inválida");
+
+                if (!IsValidImage(img)) throw new ArgumentException($"Imagem inválida: {img.FileName}");
 
                 using var inputStream = img.OpenReadStream();
                 using var compressedStream = new MemoryStream();
@@ -89,16 +98,16 @@ namespace framework_backend.Services
 
                 compressedStream.Position = 0;
 
-                if (compressedStream.Length < 100)
-                    throw new IOException($"Compressão falhou: stream muito pequeno ({compressedStream.Length} bytes)");
+                if (compressedStream.Length < 100) throw new IOException($"Compressão falhou: stream muito pequeno ({compressedStream.Length} bytes)");
 
                 var imageBytes = compressedStream.ToArray();
 
                 var uploadRequest = new FileCreateRequest
                 {
                     file = imageBytes,
-                    fileName = $"{Guid.NewGuid()}_{Path.GetFileName(img.FileName)}",
-                    folder = $"/{dto.Source}/{dto.SourceId}"
+                    fileName = $"img_{dto.Source}_{dto.SourceId}",
+                    folder = $"/{dto.Source}/{dto.SourceId}",
+                    overwriteFile = overwrite,
                 };
 
                 var result = await _imageKit.UploadAsync(uploadRequest);
@@ -108,17 +117,26 @@ namespace framework_backend.Services
                     throw new IOException("Falha ao enviar imagem para o ImageKit (resposta nula).");
                 }
 
-                urls.Add(result.url.Replace("https://ik.imagekit.io/framework", ""));
+                urls.Add(result.url.Replace("https://ik.imagekit.io/framework", ""));//replace para remover url base do imagekit
             }
 
             return urls;
         }
 
-        public async Task DeleteImageAsync(string fileId)
+        public async Task DeleteImageAsync(ImageDTO dto)
         {
-            var result = await _imageKit.DeleteFileAsync(fileId);
-            if (result == null)
-                throw new IOException("Erro ao deletar imagem do ImageKit.");
+            var imageUrl = $"https://ik.imagekit.io/framework/{dto.Source}/{dto.SourceId}/img_{dto.Source}_{dto.SourceId}";
+            var fileDetail = _imageKit.GetFileDetail(imageUrl);
+
+            if (fileDetail == null || string.IsNullOrEmpty(fileDetail.fileId))
+            {
+                throw new IOException("Falha ao obter detalhes do arquivo para exclusão.");
+            }
+            var result = await _imageKit.DeleteFileAsync(fileDetail.fileId);
+            if (result == null || result.HttpStatusCode != 200)
+            {
+                throw new IOException("Falha ao excluir imagem do ImageKit.");
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ using framework_backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace framework_backend.Controllers
 {
@@ -49,19 +48,6 @@ namespace framework_backend.Controllers
             return architect;
         }
 
-        [HttpPost("image/test")]
-        public async Task<string> imageUploadTest(IFormFile file) {
-                
-            ImageDTO imageDTO = new ImageDTO();
-
-            imageDTO.SourceId = 123;
-            imageDTO.Source = ImageSource.Architects.ToString();
-            imageDTO.Images = new List<IFormFile> { file };
-            var url = await _imageService.SaveImageAsync(imageDTO);
-            return url.FirstOrDefault();
-        }
-
-
         [HttpPost]
 
         public async Task<ActionResult<IEnumerable<ArchitectModel>>> CreateArchitect(ArchitectModel architect)
@@ -75,11 +61,10 @@ namespace framework_backend.Controllers
         }
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult> UpdateArchitect(int id, [FromForm] ArchitectUpdateForm form)
+        public async Task<ActionResult> UpdateArchitect(int id, [FromForm] ArchitectForm form)
         {
 
             if (string.IsNullOrWhiteSpace(form.data)) return BadRequest("Dados do arquiteto não enviados.");
-            Console.WriteLine("Data recebido: ",form.data);
             var architect = JsonSerializer.Deserialize<ArchitectDTO>(form.data, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -87,6 +72,9 @@ namespace framework_backend.Controllers
             var existingArchitect = await _context.Architects.FindAsync(id);
 
             if (existingArchitect == null) return NotFound();
+
+            if (architect == null) return BadRequest("Dados do arquiteto inválidos.");
+
             ImageDTO imageDTO = new ImageDTO
             {
                 SourceId = existingArchitect.Id,
@@ -94,11 +82,7 @@ namespace framework_backend.Controllers
                 Images = new List<IFormFile> { form.file }
             };
 
-
-
-            if (form.file == null || form.file.Length == 0) return BadRequest("Imagem inexistente");
-
-
+            if (form.file == null || form.file.Length == 0) return BadRequest("Imagem não enviada");
 
             existingArchitect.Name = architect.Name;
             existingArchitect.Nationality = architect.Nationality;
@@ -122,7 +106,39 @@ namespace framework_backend.Controllers
             if (architect == null) return NotFound();
             _context.Architects.Remove(architect);
             await _context.SaveChangesAsync();
+            _context.ProjectContributors.RemoveRange(_context.ProjectContributors.Where(pc => pc.ArchitectId == id));
+            _imageService.DeleteAllImages(ImageSource.Architects, id);
             return NoContent();
+        }
+        [HttpDelete("{id}/picture")]
+        public async Task<ActionResult> RemoveProfilePicture(int id)
+        {
+
+            try
+            {
+                var architect = await _context.Architects.FindAsync(id);
+
+                if (architect == null) return NotFound();
+
+                await _imageService.DeleteImageAsync(new ImageDTO
+                {
+                    SourceId = id,
+                    Source = ImageSource.Architects.ToString()
+                });
+
+                architect.Picture = null;
+
+                _context.Architects.Update(architect);
+
+                await _context.SaveChangesAsync();
+
+                return Ok("Imagem removida com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Erro ao remover a imagem: " + ex.Message);
+            }
+
         }
         [HttpGet("/api/architect/{id}/projects")]
         public async Task<ActionResult<IEnumerable<List<ProjectDTO>>>> GetProjectsByUserId(int id)

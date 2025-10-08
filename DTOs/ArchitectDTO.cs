@@ -16,7 +16,7 @@ namespace framework_backend.DTOs
         public Location Location { get; set; }
         public bool ImageChanged { get; set; }
     }
-    public class ArchitectUpdateForm
+    public class ArchitectForm
     {
         [FromForm(Name = "data")]
         public string data { get; set; } = null!;

@@ -51,7 +51,6 @@ namespace framework_backend.Controllers
             {
                 return BadRequest(error);
             }
-            Console.WriteLine("Data recebido: ", form.data);
             var projectDto = JsonSerializer.Deserialize<CreateProjectDataDTO>(form.data, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true

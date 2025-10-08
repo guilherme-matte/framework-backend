@@ -6,6 +6,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
+
 var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -54,23 +58,9 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Framework API V1");
 });
-var imagesPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "img");
 
-if (!Directory.Exists(imagesPath))
-{
-    Directory.CreateDirectory(imagesPath);
-}
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "img")),
-    RequestPath = "/img"
-});
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"Origin: {context.Request.Headers["Origin"]}");
-    await next();
-});
+
+
 
 
 

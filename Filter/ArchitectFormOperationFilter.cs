@@ -12,7 +12,7 @@ public class ArchitectFormOperationFilter : IOperationFilter
         try
         {
             var hasArchitectForm = context.MethodInfo.GetParameters()
-                .Any(p => p.ParameterType == typeof(ArchitectUpdateForm));
+                .Any(p => p.ParameterType == typeof(ArchitectForm));
 
             if (!hasArchitectForm) return;
 
